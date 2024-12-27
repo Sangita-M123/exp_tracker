@@ -1,17 +1,31 @@
 const model = require('../models/model');
 
 //  post: http://localhost:8080/api/categories
-async function create_Categories(req, res){
-   const Create = new model.Categories({
-       type: "Investment",
-       color: "#FCBE44"
-   })
+// async function create_Categories(req, res){
+//    const Create = new model.Categories({
+//        type: "Investment",
+//        color: "#FCBE44"
+//    })
 
-   await Create.save(function(err){
-       if (!err) return res.json(Create);
-       return res.status(400).json({ message : `Error while creating categories ${err}`});
-   });
+//    await Create.save(function(err){
+//        if (!err) return res.json(Create);
+//        return res.status(400).json({ message : `Error while creating categories ${err}`});
+//    });
+// }
+async function create_Categories(req, res) {
+    const Create = new model.Categories({
+        type: "Investment",
+        color: "#FCBE44"
+    });
+
+    try {
+        await Create.save();  // Use async/await instead of callback
+        res.json(Create);
+    } catch (err) {
+        res.status(400).json({ message: `Error while creating categories ${err}` });
+    }
 }
+
 
 //  get: http://localhost:8080/api/categories
 async function  get_Categories(req, res){
@@ -22,25 +36,45 @@ async function  get_Categories(req, res){
 }
 
 //  post: http://localhost:8080/api/transaction
-async function create_Transaction(req, res){
-    if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
+// async function create_Transaction(req, res){
+//     if(!req.body) return res.status(400).json("Post HTTP Data not Provided");
+//     let { name, type, amount } = req.body;
+
+//     const create = await new model.Transaction(
+//         {
+//             name,
+//             type,
+//             amount,
+//             date: new Date()
+//         }
+//     );
+
+//     create.save(function(err){
+//         if(!err) return res.json(create);
+//         return res.status(400).json({ message : `Erro while creating transaction ${err}`});
+//     });
+
+// }
+async function create_Transaction(req, res) {
+    if (!req.body) return res.status(400).json("Post HTTP Data not Provided");
+
     let { name, type, amount } = req.body;
 
-    const create = await new model.Transaction(
-        {
-            name,
-            type,
-            amount,
-            date: new Date()
-        }
-    );
-
-    create.save(function(err){
-        if(!err) return res.json(create);
-        return res.status(400).json({ message : `Erro while creating transaction ${err}`});
+    const create = new model.Transaction({
+        name,
+        type,
+        amount,
+        date: new Date()
     });
 
+    try {
+        await create.save();  // Use async/await instead of callback
+        res.json(create);
+    } catch (err) {
+        res.status(400).json({ message: `Error while creating transaction ${err}` });
+    }
 }
+
 
 //  get: http://localhost:8080/api/transaction
 async function get_Transaction(req, res){
@@ -49,12 +83,26 @@ async function get_Transaction(req, res){
 }
 
 //  delete: http://localhost:8080/api/transaction
-async function delete_Transaction(req, res){
-    if (!req.body) res.status(400).json({ message: "Request body not Found"});
-    await model.Transaction.deleteOne(req.body, function(err){
-        if(!err) res.json("Record Deleted...!");
-    }).clone().catch(function(err){ res.json("Error while deleting Transaction Record")});
+// async function delete_Transaction(req, res){
+//     if (!req.body) res.status(400).json({ message: "Request body not Found"});
+//     await model.Transaction.deleteOne(req.body, function(err){
+//         if(!err) res.json("Record Deleted...!");
+//     }).clone().catch(function(err){ res.json("Error while deleting Transaction Record")});
+// }
+async function delete_Transaction(req, res) {
+    if (!req.body) return res.status(400).json({ message: "Request body not found" });
+
+    try {
+        const result = await model.Transaction.deleteOne(req.body); // Use async/await here
+        if (result.deletedCount === 0) {
+            return res.status(404).json({ message: "No record found to delete" });
+        }
+        res.json("Record Deleted...!");
+    } catch (err) {
+        res.status(400).json({ message: "Error while deleting Transaction Record", error: err });
+    }
 }
+
 
 //  get: http://localhost:8080/api/labels
 async function get_Labels(req, res){

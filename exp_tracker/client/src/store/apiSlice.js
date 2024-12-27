@@ -1,9 +1,9 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const baseURI = "https://8a25a073-81cd-4b28-9354-ae40e8367f6b-00-1j10cifngbdtv.pike.replit.dev/";
+// const baseURI = "https://8a25a073-81cd-4b28-9354-ae40e8367f6b-00-1j10cifngbdtv.pike.replit.dev/";
 
 export const apiSlice = createApi({
-    baseQuery : fetchBaseQuery({ baseUrl : baseURI}),
+    baseQuery : fetchBaseQuery({}),
     endpoints : builder => ({
         // get categories
         getCategories : builder.query({
